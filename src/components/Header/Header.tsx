@@ -21,13 +21,21 @@ export default function Header() {
 
         <div className="flex flex-wrap items-center gap-3">
           {isAuthenticated ? (
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="rounded-full border border-black/10 bg-white/80 px-4 py-2 text-sm font-semibold text-[color:var(--ink)] shadow-sm transition hover:-translate-y-0.5 hover:shadow"
-            >
-              Logout
-            </button>
+            <>
+              <Link
+                to="/dashboard"
+                className="rounded-full border border-black/10 bg-white/80 px-4 py-2 text-sm font-semibold text-[color:var(--ink)] shadow-sm transition hover:-translate-y-0.5 hover:shadow"
+              >
+                Dashboard
+              </Link>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="rounded-full border border-black/10 bg-white/80 px-4 py-2 text-sm font-semibold text-[color:var(--ink)] shadow-sm transition hover:-translate-y-0.5 hover:shadow hover:cursor-pointer"
+              >
+                Logout
+              </button>
+            </>
           ) : (
             <>
               <Link

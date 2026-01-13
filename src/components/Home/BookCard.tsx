@@ -4,6 +4,7 @@ type BookCardProps = {
   book: Book
   onBorrow?: (book: Book) => void
   className?: string
+  isBorrowing?: boolean
 }
 
 const baseCardClasses =
@@ -13,12 +14,13 @@ function formatPercent(value: number) {
   return `${Math.round(value * 100)}%`
 }
 
-export default function BookCard({ book, onBorrow, className }: BookCardProps) {
+export default function BookCard({ book, onBorrow, className, isBorrowing = false }: BookCardProps) {
   const totalCopies = Math.max(0, book.availableCopies + book.copiesOnLoan)
   const availabilityRatio = totalCopies === 0 ? 0 : book.availableCopies / totalCopies
   const isAvailable = book.availableCopies > 0
   const availabilityText = isAvailable ? 'Available now' : 'All copies loaned'
   const cardClasses = [baseCardClasses, className].filter(Boolean).join(' ')
+  const borrowDisabled = !onBorrow || !isAvailable || isBorrowing
 
   return (
     <article className={cardClasses}>
@@ -77,11 +79,11 @@ export default function BookCard({ book, onBorrow, className }: BookCardProps) {
       <button
         type="button"
         onClick={() => onBorrow?.(book)}
-        disabled={!onBorrow || !isAvailable}
+        disabled={borrowDisabled}
         className="mt-auto inline-flex items-center justify-center rounded-full border border-black/10 bg-[color:var(--ink)] px-4 py-2 text-sm font-semibold text-[color:var(--paper)] shadow-sm transition enabled:hover:-translate-y-0.5 enabled:hover:shadow disabled:cursor-not-allowed disabled:opacity-50"
-        aria-disabled={!onBorrow || !isAvailable}
+        aria-disabled={borrowDisabled}
       >
-        Borrow
+        {isBorrowing ? 'Borrowing...' : 'Borrow'}
       </button>
     </article>
   )
