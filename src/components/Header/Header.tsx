@@ -1,6 +1,15 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '../../hooks/useAuth'
 
 export default function Header() {
+  const { isAuthenticated, logout } = useAuth()
+  const navigate = useNavigate()
+
+  const handleLogout = () => {
+    logout()
+    navigate('/')
+  }
+
   return (
     <header className="w-full border-b border-black/10">
       <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-4 py-4">
@@ -11,18 +20,30 @@ export default function Header() {
         </Link>
 
         <div className="flex flex-wrap items-center gap-3">
-          <Link
-            to="/login"
-            className="rounded-full border border-black/10 bg-white/80 px-4 py-2 text-sm font-semibold text-[color:var(--ink)] shadow-sm transition hover:-translate-y-0.5 hover:shadow"
-          >
-            Login
-          </Link>
-          <Link
-            to="/register"
-            className="rounded-full border border-black/10 bg-[color:var(--ink)] px-4 py-2 text-sm font-semibold text-[color:var(--paper)] shadow-sm transition hover:-translate-y-0.5 hover:shadow"
-          >
-            Register
-          </Link>
+          {isAuthenticated ? (
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="rounded-full border border-black/10 bg-white/80 px-4 py-2 text-sm font-semibold text-[color:var(--ink)] shadow-sm transition hover:-translate-y-0.5 hover:shadow"
+            >
+              Logout
+            </button>
+          ) : (
+            <>
+              <Link
+                to="/login"
+                className="rounded-full border border-black/10 bg-white/80 px-4 py-2 text-sm font-semibold text-[color:var(--ink)] shadow-sm transition hover:-translate-y-0.5 hover:shadow"
+              >
+                Login
+              </Link>
+              <Link
+                to="/register"
+                className="rounded-full border border-black/10 bg-[color:var(--ink)] px-4 py-2 text-sm font-semibold text-[color:var(--paper)] shadow-sm transition hover:-translate-y-0.5 hover:shadow"
+              >
+                Register
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </header>
