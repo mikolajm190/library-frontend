@@ -6,6 +6,8 @@ import type { Book } from '../schemas/book.schema'
 type UseBooksParams = {
   page?: number
   size?: number
+  sortBy?: string
+  sortOrder?: 'asc' | 'desc'
 }
 
 type UseBooksResult = {
@@ -15,7 +17,12 @@ type UseBooksResult = {
   reload: () => void
 }
 
-export default function useBooks({ page, size = 20 }: UseBooksParams = {}): UseBooksResult {
+export default function useBooks({
+  page,
+  size = 20,
+  sortBy,
+  sortOrder,
+}: UseBooksParams = {}): UseBooksResult {
   const [books, setBooks] = useState<Book[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -28,7 +35,7 @@ export default function useBooks({ page, size = 20 }: UseBooksParams = {}): UseB
       try {
         setIsLoading(true)
         setError(null)
-        const data = await getBooks({ page, size }, controller.signal)
+        const data = await getBooks({ page, size, sortBy, sortOrder }, controller.signal)
         setBooks(data)
       } catch (err) {
         if (axios.isAxiosError(err) && err.code === 'ERR_CANCELED') {
@@ -45,7 +52,7 @@ export default function useBooks({ page, size = 20 }: UseBooksParams = {}): UseB
     void loadBooks()
 
     return () => controller.abort()
-  }, [page, size, reloadToken])
+  }, [page, size, sortBy, sortOrder, reloadToken])
 
   const reload = () => {
     setReloadToken((value) => value + 1)
