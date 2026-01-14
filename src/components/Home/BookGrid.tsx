@@ -6,6 +6,7 @@ type BookGridProps = {
   isLoading: boolean
   error: string | null
   borrowError: string | null
+  borrowErrorBookId: string | null
   onRetry: () => void
   onBorrow: (book: Book) => void
   isBorrowing: boolean
@@ -17,6 +18,7 @@ export default function BookGrid({
   isLoading,
   error,
   borrowError,
+  borrowErrorBookId,
   onRetry,
   onBorrow,
   isBorrowing,
@@ -39,9 +41,6 @@ export default function BookGrid({
           </button>
         </div>
       )}
-      {borrowError && !error && (
-        <p className="col-span-full text-sm text-amber-700">{borrowError}</p>
-      )}
       {!isLoading &&
         !error &&
         books.map((book) => (
@@ -50,6 +49,7 @@ export default function BookGrid({
             book={book}
             onBorrow={onBorrow}
             isBorrowing={isBorrowing && borrowingBookId === book.id}
+            borrowError={borrowErrorBookId === book.id ? borrowError : null}
           />
         ))}
     </section>

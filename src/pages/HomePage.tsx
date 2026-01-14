@@ -6,7 +6,13 @@ import useBooks from '../hooks/useBooks'
 
 export default function HomePage() {
   const { books, isLoading, error, reload } = useBooks({ size: 20 })
-  const { borrowBook, error: borrowError, isBorrowing, borrowingBookId } = useBorrowBook()
+  const {
+    borrowBook,
+    error: borrowError,
+    errorBookId,
+    isBorrowing,
+    borrowingBookId,
+  } = useBorrowBook()
 
   return (
     <PageShell>
@@ -16,6 +22,7 @@ export default function HomePage() {
         isLoading={isLoading}
         error={error}
         borrowError={borrowError}
+        borrowErrorBookId={errorBookId}
         onRetry={reload}
         onBorrow={(book) => borrowBook(book.id, reload)}
         isBorrowing={isBorrowing}
