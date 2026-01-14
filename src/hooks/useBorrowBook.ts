@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useLocation, useNavigate } from 'react-router-dom'
-import axios from 'axios'
 import { createLoan } from '../api/loans.api'
 import { getMe } from '../api/users.api'
+import { getApiErrorMessage } from '../api/apiError'
+import { queryKeys } from '../api/queryKeys'
 import { useAuth } from './useAuth'
 
 type UseBorrowBookResult = {
@@ -41,20 +42,11 @@ export default function useBorrowBook(): UseBorrowBookResult {
       if (onSuccess) {
         await onSuccess()
       }
-      await queryClient.invalidateQueries({ queryKey: ['loans'] })
-      await queryClient.invalidateQueries({ queryKey: ['books'] })
+      await queryClient.invalidateQueries({ queryKey: queryKeys.loans() })
+      await queryClient.invalidateQueries({ queryKey: queryKeys.books() })
       navigate('/dashboard')
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        const responseData = err.response?.data as { message?: string } | string | undefined
-        if (typeof responseData === 'string') {
-          setError(responseData)
-        } else {
-          setError(responseData?.message ?? 'Failed to borrow book.')
-        }
-        return
-      }
-      setError(err instanceof Error ? err.message : 'Failed to borrow book.')
+      setError(getApiErrorMessage(err, 'Failed to borrow book.'))
     } finally {
       setIsBorrowing(false)
       setBorrowingBookId(null)

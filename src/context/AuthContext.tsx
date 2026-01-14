@@ -1,9 +1,10 @@
 import { createContext } from 'react'
+import type { Role } from '../auth/token'
 
 export type AuthContextValue = {
   token: string | null
   isAuthenticated: boolean
-  role: string | null
+  role: Role | null
   isAdmin: boolean
   login: (token: string) => void
   logout: () => void

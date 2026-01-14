@@ -1,5 +1,7 @@
 export const AUTH_TOKEN_KEY = 'authToken'
 
+export type Role = 'admin' | 'user'
+
 export const getStoredToken = () => localStorage.getItem(AUTH_TOKEN_KEY)
 
 export const setStoredToken = (token: string) => {
@@ -10,8 +12,13 @@ export const clearStoredToken = () => {
   localStorage.removeItem(AUTH_TOKEN_KEY)
 }
 
+type TokenRole = 'ROLE_ADMIN' | 'ROLE_USER'
+
 type TokenPayload = {
-  roles?: string[]
+  roles?: TokenRole[]
+  sub?: string
+  iat?: number
+  exp?: number
 }
 
 const decodePayload = (token: string): TokenPayload | null => {
@@ -29,7 +36,7 @@ const decodePayload = (token: string): TokenPayload | null => {
   }
 }
 
-export const getRoleFromToken = (token: string | null): string | null => {
+export const getRoleFromToken = (token: string | null): Role | null => {
   if (!token) {
     return null
   }

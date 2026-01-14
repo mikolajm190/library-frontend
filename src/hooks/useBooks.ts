@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { getBooks } from '../api/books.api'
+import { queryKeys } from '../api/queryKeys'
 import type { Book } from '../schemas/book.schema'
 
 type UseBooksParams = {
@@ -23,7 +24,7 @@ export default function useBooks({
   sortOrder,
 }: UseBooksParams = {}): UseBooksResult {
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ['books', page, size, sortBy ?? null, sortOrder ?? null],
+    queryKey: queryKeys.books({ page, size, sortBy, sortOrder }),
     queryFn: ({ signal }) => getBooks({ page, size, sortBy, sortOrder }, signal),
   })
 
