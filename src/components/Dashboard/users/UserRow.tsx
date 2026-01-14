@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import type { User } from '../../../schemas/user.schema'
 import UserDetails from './UserDetails'
 import UserEditFields from './UserEditFields'
@@ -17,13 +17,6 @@ export default function UserRow({ user, onUpdate, onDelete, isUpdating, isDeleti
   const [username, setUsername] = useState(user.username)
   const [password, setPassword] = useState('')
   const [formError, setFormError] = useState<string | null>(null)
-
-  useEffect(() => {
-    if (isEditing) {
-      return
-    }
-    setUsername(user.username)
-  }, [user.username, isEditing])
 
   const handleSave = async () => {
     if (!window.confirm('Save changes to this user?')) {
@@ -48,6 +41,13 @@ export default function UserRow({ user, onUpdate, onDelete, isUpdating, isDeleti
     setIsEditing(false)
   }
 
+  const handleEdit = () => {
+    setUsername(user.username)
+    setPassword('')
+    setFormError(null)
+    setIsEditing(true)
+  }
+
   return (
     <li className="rounded-2xl border border-black/10 bg-white/60 p-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -70,7 +70,7 @@ export default function UserRow({ user, onUpdate, onDelete, isUpdating, isDeleti
         isEditing={isEditing}
         isUpdating={isUpdating}
         isDeleting={isDeleting}
-        onEdit={() => setIsEditing(true)}
+        onEdit={handleEdit}
         onSave={handleSave}
         onCancel={handleCancel}
         onDelete={() => {

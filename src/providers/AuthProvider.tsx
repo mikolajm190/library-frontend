@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import {
   AUTH_TOKEN_KEY,
@@ -27,19 +27,22 @@ export default function AuthProvider({ children }: AuthProviderProps) {
 
     window.addEventListener('storage', handleStorage)
     return () => window.removeEventListener('storage', handleStorage)
-  }, [])
+  }, [queryClient])
 
-  const login = (nextToken: string) => {
-    setStoredToken(nextToken)
-    setToken(nextToken)
-    queryClient.clear()
-  }
+  const login = useCallback(
+    (nextToken: string) => {
+      setStoredToken(nextToken)
+      setToken(nextToken)
+      queryClient.clear()
+    },
+    [queryClient],
+  )
 
-  const logout = () => {
+  const logout = useCallback(() => {
     clearStoredToken()
     setToken(null)
     queryClient.clear()
-  }
+  }, [queryClient])
 
   const role = useMemo(() => getRoleFromToken(token), [token])
   const isAdmin = role === 'admin'
@@ -53,7 +56,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
       login,
       logout,
     }),
-    [token, role, isAdmin],
+    [token, role, isAdmin, login, logout],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

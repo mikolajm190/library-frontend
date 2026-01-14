@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import type { Book } from '../../../schemas/book.schema'
 import AvailabilityBadge from './AvailabilityBadge'
 import BookDetails from './BookDetails'
@@ -18,14 +18,6 @@ export default function BookRow({ book, onUpdate, onDelete, isUpdating, isDeleti
   const [title, setTitle] = useState(book.title)
   const [author, setAuthor] = useState(book.author)
 
-  useEffect(() => {
-    if (isEditing) {
-      return
-    }
-    setTitle(book.title)
-    setAuthor(book.author)
-  }, [book.title, book.author, isEditing])
-
   const handleSave = async () => {
     if (!window.confirm('Save changes to this book?')) {
       return
@@ -40,6 +32,12 @@ export default function BookRow({ book, onUpdate, onDelete, isUpdating, isDeleti
     setTitle(book.title)
     setAuthor(book.author)
     setIsEditing(false)
+  }
+
+  const handleEdit = () => {
+    setTitle(book.title)
+    setAuthor(book.author)
+    setIsEditing(true)
   }
 
   return (
@@ -67,7 +65,7 @@ export default function BookRow({ book, onUpdate, onDelete, isUpdating, isDeleti
         isEditing={isEditing}
         isUpdating={isUpdating}
         isDeleting={isDeleting}
-        onEdit={() => setIsEditing(true)}
+        onEdit={handleEdit}
         onSave={handleSave}
         onCancel={handleCancel}
         onDelete={() => {
