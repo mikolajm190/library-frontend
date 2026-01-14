@@ -1,5 +1,4 @@
-import Footer from '../components/Footer/Footer'
-import Header from '../components/Header/Header'
+import PageShell from '../components/Layout/PageShell'
 import BookGrid from '../components/Home/BookGrid'
 import HomeHero from '../components/Home/HomeHero'
 import useBorrowBook from '../hooks/useBorrowBook'
@@ -10,8 +9,7 @@ export default function HomePage() {
   const { borrowBook, error: borrowError, isBorrowing, borrowingBookId } = useBorrowBook()
 
   return (
-    <main className="min-h-screen px-6 py-12 sm:px-10">
-      <Header />
+    <PageShell>
       <HomeHero />
       <BookGrid
         books={books}
@@ -23,7 +21,6 @@ export default function HomePage() {
         isBorrowing={isBorrowing}
         borrowingBookId={borrowingBookId}
       />
-      <Footer />
-    </main>
+    </PageShell>
   )
 }

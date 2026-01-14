@@ -1,9 +1,8 @@
 import { useState } from 'react'
 import { useLocation, useNavigate, type Location } from 'react-router-dom'
-import axios from 'axios'
 import { register } from '../api/auth.api'
-import Footer from '../components/Footer/Footer'
-import Header from '../components/Header/Header'
+import { getApiErrorMessage } from '../api/apiError'
+import PageShell from '../components/Layout/PageShell'
 import RegisterForm, { type RegisterFormValues } from '../components/Register/RegisterForm'
 import { useAuth } from '../hooks/useAuth'
 
@@ -23,30 +22,17 @@ export default function RegisterPage() {
       storeToken(token)
       navigate(from, { replace: true })
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        const responseData = err.response?.data as { message?: string } | string | undefined
-        if (typeof responseData === 'string') {
-          setError(responseData)
-        } else {
-          setError(responseData?.message ?? 'Registration failed.')
-        }
-        return
-      }
-      setError(err instanceof Error ? err.message : 'Registration failed.')
+      setError(getApiErrorMessage(err, 'Registration failed.'))
     } finally {
       setIsSubmitting(false)
     }
   }
 
   return (
-    <main className="min-h-screen px-6 py-12 sm:px-10">
-      <Header />
-
+    <PageShell>
       <section className="mx-auto mt-14 flex w-full max-w-6xl justify-center">
         <RegisterForm onSubmit={handleSubmit} isSubmitting={isSubmitting} error={error} />
       </section>
-
-      <Footer />
-    </main>
+    </PageShell>
   )
 }
