@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react'
-import axios from 'axios'
+import { useQuery } from '@tanstack/react-query'
 import { getBooks } from '../api/books.api'
 import type { Book } from '../schemas/book.schema'
 
@@ -23,40 +22,20 @@ export default function useBooks({
   sortBy,
   sortOrder,
 }: UseBooksParams = {}): UseBooksResult {
-  const [books, setBooks] = useState<Book[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [reloadToken, setReloadToken] = useState(0)
+  const { data, isLoading, error, refetch } = useQuery({
+    queryKey: ['books', page, size, sortBy ?? null, sortOrder ?? null],
+    queryFn: ({ signal }) => getBooks({ page, size, sortBy, sortOrder }, signal),
+  })
 
-  useEffect(() => {
-    const controller = new AbortController()
-
-    const loadBooks = async () => {
-      try {
-        setIsLoading(true)
-        setError(null)
-        const data = await getBooks({ page, size, sortBy, sortOrder }, controller.signal)
-        setBooks(data)
-      } catch (err) {
-        if (axios.isAxiosError(err) && err.code === 'ERR_CANCELED') {
-          return
-        }
-        setError(err instanceof Error ? err.message : 'Failed to load books')
-      } finally {
-        if (!controller.signal.aborted) {
-          setIsLoading(false)
-        }
-      }
-    }
-
-    void loadBooks()
-
-    return () => controller.abort()
-  }, [page, size, sortBy, sortOrder, reloadToken])
+  const loadError = error
+    ? error instanceof Error
+      ? error.message
+      : 'Failed to load books'
+    : null
 
   const reload = () => {
-    setReloadToken((value) => value + 1)
+    void refetch()
   }
 
-  return { books, isLoading, error, reload }
+  return { books: data ?? [], isLoading, error: loadError, reload }
 }

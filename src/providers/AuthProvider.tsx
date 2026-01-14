@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import {
   AUTH_TOKEN_KEY,
   clearStoredToken,
@@ -13,12 +14,14 @@ type AuthProviderProps = {
 }
 
 export default function AuthProvider({ children }: AuthProviderProps) {
+  const queryClient = useQueryClient()
   const [token, setToken] = useState<string | null>(() => getStoredToken())
 
   useEffect(() => {
     const handleStorage = (event: StorageEvent) => {
       if (event.key === AUTH_TOKEN_KEY) {
         setToken(event.newValue)
+        queryClient.clear()
       }
     }
 
@@ -29,11 +32,13 @@ export default function AuthProvider({ children }: AuthProviderProps) {
   const login = (nextToken: string) => {
     setStoredToken(nextToken)
     setToken(nextToken)
+    queryClient.clear()
   }
 
   const logout = () => {
     clearStoredToken()
     setToken(null)
+    queryClient.clear()
   }
 
   const role = useMemo(() => getRoleFromToken(token), [token])

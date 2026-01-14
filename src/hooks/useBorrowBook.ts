@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { useLocation, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { createLoan } from '../api/loans.api'
@@ -16,6 +17,7 @@ export default function useBorrowBook(): UseBorrowBookResult {
   const { isAuthenticated } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
+  const queryClient = useQueryClient()
   const [error, setError] = useState<string | null>(null)
   const [isBorrowing, setIsBorrowing] = useState(false)
   const [borrowingBookId, setBorrowingBookId] = useState<string | null>(null)
@@ -39,6 +41,8 @@ export default function useBorrowBook(): UseBorrowBookResult {
       if (onSuccess) {
         await onSuccess()
       }
+      await queryClient.invalidateQueries({ queryKey: ['loans'] })
+      await queryClient.invalidateQueries({ queryKey: ['books'] })
       navigate('/dashboard')
     } catch (err) {
       if (axios.isAxiosError(err)) {
