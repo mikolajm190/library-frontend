@@ -1,5 +1,5 @@
 import LoanCard from './LoanCard'
-import type { Loan } from '../../schemas/loan.schema'
+import type { Loan } from '../../../schemas/loan.schema'
 
 type LoanListProps = {
   loans: Loan[]

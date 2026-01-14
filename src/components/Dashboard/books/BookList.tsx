@@ -1,4 +1,4 @@
-import type { Book } from '../../schemas/book.schema'
+import type { Book } from '../../../schemas/book.schema'
 import BookRow from './BookRow'
 
 type BookListProps = {
