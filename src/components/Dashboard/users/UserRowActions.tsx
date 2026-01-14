@@ -1,3 +1,5 @@
+import { Pencil, Save, Trash2, X } from 'lucide-react'
+
 type UserRowActionsProps = {
   isEditing: boolean
   isUpdating: boolean
@@ -27,16 +29,18 @@ export default function UserRowActions({
             type="button"
             onClick={onSave}
             disabled={isDisabled}
-            className="rounded-full border border-black/10 bg-[color:var(--ink)] px-3 py-1 text-xs font-semibold text-[color:var(--paper)] shadow-sm transition hover:-translate-y-0.5 hover:shadow disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-[color:var(--ink)] px-3 py-1 text-xs font-semibold text-[color:var(--paper)] shadow-sm transition hover:-translate-y-0.5 hover:shadow disabled:cursor-not-allowed disabled:opacity-60"
           >
+            <Save className="h-3.5 w-3.5" aria-hidden />
             {isUpdating ? 'Saving...' : 'Save'}
           </button>
           <button
             type="button"
             onClick={onCancel}
             disabled={isDisabled}
-            className="rounded-full border border-black/10 bg-white/80 px-3 py-1 text-xs font-semibold text-[color:var(--ink)] shadow-sm transition hover:-translate-y-0.5 hover:shadow disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white/80 px-3 py-1 text-xs font-semibold text-[color:var(--ink)] shadow-sm transition hover:-translate-y-0.5 hover:shadow disabled:cursor-not-allowed disabled:opacity-60"
           >
+            <X className="h-3.5 w-3.5" aria-hidden />
             Cancel
           </button>
         </>
@@ -46,16 +50,18 @@ export default function UserRowActions({
             type="button"
             onClick={onEdit}
             disabled={isDisabled}
-            className="rounded-full border border-black/10 bg-white/80 px-3 py-1 text-xs font-semibold text-[color:var(--ink)] shadow-sm transition hover:-translate-y-0.5 hover:shadow disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white/80 px-3 py-1 text-xs font-semibold text-[color:var(--ink)] shadow-sm transition hover:-translate-y-0.5 hover:shadow disabled:cursor-not-allowed disabled:opacity-60"
           >
+            <Pencil className="h-3.5 w-3.5" aria-hidden />
             Edit
           </button>
           <button
             type="button"
             onClick={onDelete}
             disabled={isDisabled}
-            className="rounded-full border border-rose-200 bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-700 shadow-sm transition hover:-translate-y-0.5 hover:shadow disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex items-center gap-2 rounded-full border border-rose-200 bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-700 shadow-sm transition hover:-translate-y-0.5 hover:shadow disabled:cursor-not-allowed disabled:opacity-60"
           >
+            <Trash2 className="h-3.5 w-3.5" aria-hidden />
             {isDeleting ? 'Deleting...' : 'Delete'}
           </button>
         </>

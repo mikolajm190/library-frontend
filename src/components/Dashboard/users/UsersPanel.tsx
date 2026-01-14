@@ -1,3 +1,4 @@
+import { Users } from 'lucide-react'
 import useUsersAdmin from '../../../hooks/useUsersAdmin'
 import DashboardPanel from '../shared/DashboardPanel'
 import UserCreateForm from './UserCreateForm'
@@ -32,6 +33,7 @@ export default function UsersPanel() {
     <DashboardPanel
       title="Users"
       description="Manage library members, roles, and access."
+      icon={<Users className="h-5 w-5 text-[color:var(--ink)]" aria-hidden />}
       className="flex flex-col lg:h-[clamp(34rem,70vh,44rem)]"
       bodyClassName="flex min-h-0 flex-1 flex-col"
     >

@@ -1,3 +1,5 @@
+import { BookOpen } from 'lucide-react'
+
 type BookCardHeaderProps = {
   title: string
   author: string
@@ -14,7 +16,10 @@ export default function BookCardHeader({
   return (
     <div className="flex items-start justify-between gap-3">
       <div>
-        <p className="text-xs uppercase tracking-[0.32em] text-[color:var(--ink-muted)]">Book</p>
+        <div className="flex items-center gap-2 text-xs uppercase tracking-[0.32em] text-[color:var(--ink-muted)]">
+          <BookOpen className="h-3.5 w-3.5" aria-hidden />
+          <span>Book</span>
+        </div>
         <h3 className="mt-2 font-[var(--font-display)] text-2xl leading-tight text-[color:var(--ink)]">
           {title}
         </h3>

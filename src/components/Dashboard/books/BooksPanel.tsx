@@ -1,3 +1,4 @@
+import { BookCopy } from 'lucide-react'
 import useBooksAdmin from '../../../hooks/useBooksAdmin'
 import DashboardPanel from '../shared/DashboardPanel'
 import BookCreateForm from './BookCreateForm'
@@ -32,6 +33,7 @@ export default function BooksPanel() {
     <DashboardPanel
       title="Books"
       description="Keep the catalog up to date."
+      icon={<BookCopy className="h-5 w-5 text-[color:var(--ink)]" aria-hidden />}
       className="flex flex-col lg:h-[clamp(34rem,70vh,44rem)]"
       bodyClassName="flex min-h-0 flex-1 flex-col"
     >

@@ -1,3 +1,5 @@
+import { AlertTriangle, CheckCircle2, Loader2 } from 'lucide-react'
+
 type PanelStatusProps = {
   variant: 'loading' | 'error' | 'success' | 'empty'
   message: string
@@ -6,13 +8,21 @@ type PanelStatusProps = {
 
 export default function PanelStatus({ variant, message, onRetry }: PanelStatusProps) {
   if (variant === 'loading') {
-    return <p className="text-sm text-[color:var(--ink-muted)]">{message}</p>
+    return (
+      <div className="flex items-center gap-2 text-sm text-[color:var(--ink-muted)]">
+        <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+        <span>{message}</span>
+      </div>
+    )
   }
 
   if (variant === 'error') {
     return (
       <div className="flex flex-wrap items-center gap-3 text-sm text-amber-700">
-        <span>{message}</span>
+        <span className="inline-flex items-center gap-2">
+          <AlertTriangle className="h-4 w-4" aria-hidden />
+          {message}
+        </span>
         {onRetry && (
           <button
             type="button"
@@ -27,7 +37,12 @@ export default function PanelStatus({ variant, message, onRetry }: PanelStatusPr
   }
 
   if (variant === 'success') {
-    return <p className="text-sm text-emerald-700">{message}</p>
+    return (
+      <div className="flex items-center gap-2 text-sm text-emerald-700">
+        <CheckCircle2 className="h-4 w-4" aria-hidden />
+        <span>{message}</span>
+      </div>
+    )
   }
 
   return (
