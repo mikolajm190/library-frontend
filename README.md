@@ -2,6 +2,8 @@
 
 A React + TypeScript + Tailwind CSS front-end for a library system. It combines a public book catalog with authenticated borrowing and an admin dashboard for managing loans, users, and books.
 
+Backend repo: [library-backend](https://github.com/mikolajm190/library-backend)
+
 ## Notice
 - The majority of the code lives on the `genai/main` branch and is vide coded.
 
@@ -96,6 +98,3 @@ No automated tests are included in this repository yet.
 - Add E2E coverage for auth and borrowing flows.
 - Change admin panels to a tabbed layout.
 - Containerize the client.
-
-## Backend Repo
-- Backend repo/API: [library-backend](https://github.com/mikolajm190/library-backend)
