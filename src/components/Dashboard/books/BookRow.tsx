@@ -58,7 +58,7 @@ export default function BookRow({ book, onUpdate, onDelete, isUpdating, isDeleti
         </div>
         <AvailabilityBadge
           availableCopies={book.availableCopies}
-          copiesOnLoan={book.copiesOnLoan}
+          totalCopies={book.totalCopies}
         />
       </div>
       <BookRowActions

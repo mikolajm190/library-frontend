@@ -1,9 +1,10 @@
 type BookCardStatsProps = {
   availableCopies: number
-  copiesOnLoan: number
+  totalCopies: number
 }
 
-export default function BookCardStats({ availableCopies, copiesOnLoan }: BookCardStatsProps) {
+export default function BookCardStats({ availableCopies, totalCopies }: BookCardStatsProps) {
+  const copiesOnLoan = totalCopies - availableCopies
   return (
     <div className="grid grid-cols-2 gap-3 rounded-xl border border-black/5 bg-white/70 p-3 text-sm">
       <div>

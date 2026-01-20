@@ -9,7 +9,7 @@ type BookCreateFormProps = {
 export default function BookCreateForm({ isSubmitting, onCreate }: BookCreateFormProps) {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
-  const [availableCopies, setAvailableCopies] = useState(1)
+  const [totalCopies, setTotalCopies] = useState(1)
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -20,13 +20,13 @@ export default function BookCreateForm({ isSubmitting, onCreate }: BookCreateFor
     const success = await onCreate({
       title: title.trim(),
       author: author.trim(),
-      availableCopies,
+      totalCopies,
     })
 
     if (success) {
       setTitle('')
       setAuthor('')
-      setAvailableCopies(1)
+      setTotalCopies(1)
     }
   }
 
@@ -59,12 +59,14 @@ export default function BookCreateForm({ isSubmitting, onCreate }: BookCreateFor
           />
         </label>
         <label className="flex flex-col gap-2 text-xs text-[color:var(--ink-muted)]">
-          Available copies
+          Total copies
           <input
             type="number"
             min={1}
-            value={availableCopies}
-            onChange={(event) => setAvailableCopies(Number(event.target.value))}
+            max={10}
+            step={1}
+            value={totalCopies}
+            onChange={(event) => setTotalCopies(Number(event.target.value))}
             required
             disabled={isSubmitting}
             className="rounded-xl border border-black/10 bg-white px-3 py-2 text-sm text-[color:var(--ink)] outline-none transition focus:border-black/30 focus:ring-2 focus:ring-black/5"

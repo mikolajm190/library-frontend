@@ -37,7 +37,7 @@ export async function getBooks(
 export type CreateBookPayload = {
   title: string
   author: string
-  availableCopies: number
+  totalCopies: number
 }
 
 export type UpdateBookPayload = {

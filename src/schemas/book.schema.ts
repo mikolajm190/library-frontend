@@ -2,8 +2,8 @@ export interface Book {
   id: string;
   title: string;
   author: string;
+  totalCopies: number;
   availableCopies: number;
-  copiesOnLoan: number;
 }
 
 export type BookListResponse = Book[];

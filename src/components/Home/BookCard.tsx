@@ -22,10 +22,10 @@ export default function BookCard({
   isBorrowing = false,
   borrowError,
 }: BookCardProps) {
-  const totalCopies = Math.max(0, book.availableCopies + book.copiesOnLoan)
+  const totalCopies = book.totalCopies
   const availabilityRatio = totalCopies === 0 ? 0 : book.availableCopies / totalCopies
   const isAvailable = book.availableCopies > 0
-  const availabilityText = isAvailable ? 'Available now' : 'All copies loaned'
+  const availabilityText = isAvailable ? 'Available now' : 'Not available'
   const cardClasses = [baseCardClasses, className].filter(Boolean).join(' ')
   const borrowDisabled = !onBorrow || !isAvailable || isBorrowing
 
@@ -38,7 +38,7 @@ export default function BookCard({
         availabilityText={availabilityText}
       />
 
-      <BookCardStats availableCopies={book.availableCopies} copiesOnLoan={book.copiesOnLoan} />
+      <BookCardStats availableCopies={book.availableCopies} totalCopies={totalCopies} />
 
       <BookCardAvailabilityBar totalCopies={totalCopies} availabilityRatio={availabilityRatio} />
 
