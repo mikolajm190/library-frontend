@@ -1,4 +1,4 @@
-import AdminPanels from '../components/Dashboard/AdminPanels'
+import DashboardTabs from '../components/Dashboard/DashboardTabs'
 import DashboardHero from '../components/Dashboard/DashboardHero'
 import LoansPanel from '../components/Dashboard/loans/LoansPanel'
 import PageShell from '../components/Layout/PageShell'
@@ -11,9 +11,8 @@ export default function DashboardPage() {
     <PageShell>
       <DashboardHero />
 
-      <section className="mx-auto mt-10 grid w-full max-w-6xl gap-6 lg:grid-cols-2">
-        <LoansPanel isAdmin={isAdmin} />
-        {isAdmin && <AdminPanels />}
+      <section className="mx-auto mt-10 w-full max-w-6xl">
+        {isAdmin ? <DashboardTabs /> : <LoansPanel isAdmin={false} />}
       </section>
     </PageShell>
   )
