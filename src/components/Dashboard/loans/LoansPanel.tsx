@@ -53,7 +53,6 @@ export default function LoansPanel({ isAdmin }: LoansPanelProps) {
       title={loansTitle}
       description={loansDescription}
       icon={<ClipboardList className="h-5 w-5 text-[color:var(--ink)]" aria-hidden />}
-      className="flex flex-col lg:h-[clamp(34rem,70vh,44rem)]"
       bodyClassName="flex min-h-0 flex-1 flex-col"
     >
       <PanelSearch

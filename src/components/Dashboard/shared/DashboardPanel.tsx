@@ -17,7 +17,11 @@ export default function DashboardPanel({
   bodyClassName,
   icon,
 }: DashboardPanelProps) {
-  const rootClasses = ['rounded-3xl border border-black/10 bg-white/80 p-6 shadow-sm', className]
+  const rootClasses = [
+    'rounded-3xl border border-black/10 bg-white/80 p-6 shadow-sm',
+    'flex flex-col md:h-[clamp(54rem,88vh,72rem)] lg:h-[clamp(58rem,92vh,80rem)]',
+    className,
+  ]
     .filter(Boolean)
     .join(' ')
   const contentClasses = ['mt-4', bodyClassName].filter(Boolean).join(' ')

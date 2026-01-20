@@ -49,7 +49,6 @@ export default function UsersPanel() {
       title="Users"
       description="Manage library members, roles, and access."
       icon={<Users className="h-5 w-5 text-[color:var(--ink)]" aria-hidden />}
-      className="flex flex-col lg:h-[clamp(34rem,70vh,44rem)]"
       bodyClassName="flex min-h-0 flex-1 flex-col"
     >
       <UserCreateForm isSubmitting={isCreating} onCreate={createUser} />
