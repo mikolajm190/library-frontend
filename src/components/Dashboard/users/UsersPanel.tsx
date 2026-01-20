@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Users } from 'lucide-react'
 import useUsersAdmin from '../../../hooks/useUsersAdmin'
 import DashboardPanel from '../shared/DashboardPanel'
@@ -6,6 +7,7 @@ import UserList from './UserList'
 import PanelFooter from '../shared/PanelFooter'
 import PanelListContainer from '../shared/PanelListContainer'
 import PanelStatus from '../shared/PanelStatus'
+import PanelSearch from '../shared/PanelSearch'
 
 export default function UsersPanel() {
   const {
@@ -29,6 +31,19 @@ export default function UsersPanel() {
     deleteUser,
   } = useUsersAdmin({ size: 10 })
 
+  const [searchQuery, setSearchQuery] = useState('')
+  const normalizedQuery = searchQuery.trim().toLowerCase()
+  const filteredUsers = normalizedQuery
+    ? users.filter((user) => {
+        const haystack = `${user.username} ${user.id}`.toLowerCase()
+        return haystack.includes(normalizedQuery)
+      })
+    : users
+  const isFiltering = normalizedQuery.length > 0
+  const emptyMessage = isFiltering
+    ? `No users match "${searchQuery.trim()}".`
+    : 'No users found.'
+
   return (
     <DashboardPanel
       title="Users"
@@ -38,6 +53,13 @@ export default function UsersPanel() {
       bodyClassName="flex min-h-0 flex-1 flex-col"
     >
       <UserCreateForm isSubmitting={isCreating} onCreate={createUser} />
+      <PanelSearch
+        className="mt-4"
+        label="Search users"
+        placeholder="Search by username or id"
+        value={searchQuery}
+        onChange={setSearchQuery}
+      />
 
       {isLoading && <PanelStatus variant="loading" message="Loading users..." />}
       {loadError && (
@@ -46,12 +68,12 @@ export default function UsersPanel() {
       {actionError && !loadError && <PanelStatus variant="error" message={actionError} />}
       {actionSuccess && !loadError && <PanelStatus variant="success" message={actionSuccess} />}
       <PanelListContainer>
-        {!isLoading && !loadError && users.length === 0 && (
-          <PanelStatus variant="empty" message="No users found." />
+        {!isLoading && !loadError && filteredUsers.length === 0 && (
+          <PanelStatus variant="empty" message={emptyMessage} />
         )}
-        {!isLoading && !loadError && users.length > 0 && (
+        {!isLoading && !loadError && filteredUsers.length > 0 && (
           <UserList
-            users={users}
+            users={filteredUsers}
             onUpdate={updateUser}
             onDelete={deleteUser}
             isUpdating={isUpdating}
