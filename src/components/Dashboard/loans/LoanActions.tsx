@@ -27,7 +27,7 @@ export default function LoanActions({
         type="button"
         onClick={() => onProlong(loanId)}
         disabled={isDisabled}
-        className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white/80 px-3 py-1 text-xs font-semibold text-[color:var(--ink)] shadow-sm transition hover:-translate-y-0.5 hover:shadow disabled:cursor-not-allowed disabled:opacity-60"
+        className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white/80 px-3 py-1 text-xs font-semibold text-[color:var(--ink)] shadow-sm transition enabled:cursor-pointer hover:-translate-y-0.5 hover:shadow disabled:cursor-not-allowed disabled:opacity-60"
       >
         <Clock className="h-3.5 w-3.5" aria-hidden />
         {isUpdating ? 'Prolonging...' : 'Prolong 30 days'}
@@ -36,7 +36,7 @@ export default function LoanActions({
         type="button"
         onClick={() => onCancel(loanId)}
         disabled={isDisabled}
-        className="inline-flex items-center gap-2 rounded-full border border-rose-200 bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-700 shadow-sm transition hover:-translate-y-0.5 hover:shadow disabled:cursor-not-allowed disabled:opacity-60"
+        className="inline-flex items-center gap-2 rounded-full border border-rose-200 bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-700 shadow-sm transition enabled:cursor-pointer hover:-translate-y-0.5 hover:shadow disabled:cursor-not-allowed disabled:opacity-60"
       >
         <XCircle className="h-3.5 w-3.5" aria-hidden />
         {isCancelling ? 'Cancelling...' : 'Cancel loan'}

@@ -55,7 +55,7 @@ export default function UserCreateForm({ isSubmitting, onCreate }: UserCreateFor
       <button
         type="submit"
         disabled={isSubmitting}
-        className="mt-4 rounded-full border border-black/10 bg-[color:var(--ink)] px-4 py-2 text-xs font-semibold text-[color:var(--paper)] shadow-sm transition hover:-translate-y-0.5 hover:shadow disabled:cursor-not-allowed disabled:opacity-60"
+        className="mt-4 rounded-full border border-black/10 bg-[color:var(--ink)] px-4 py-2 text-xs font-semibold text-[color:var(--paper)] shadow-sm transition enabled:cursor-pointer hover:-translate-y-0.5 hover:shadow disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isSubmitting ? 'Creating...' : 'Add user'}
       </button>
