@@ -37,6 +37,7 @@ export default function LoanCard({
       )}
       <LoanActions
         loanId={loan.id}
+        isStaff={isStaff}
         onProlong={onProlong}
         onCancel={onCancel}
         isUpdating={isUpdating}
