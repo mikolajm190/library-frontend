@@ -1,6 +1,6 @@
 export const AUTH_TOKEN_KEY = 'authToken'
 
-export type Role = 'admin' | 'user'
+export type Role = 'admin' | 'librarian' | 'user'
 
 export const getStoredToken = () => localStorage.getItem(AUTH_TOKEN_KEY)
 
@@ -12,7 +12,7 @@ export const clearStoredToken = () => {
   localStorage.removeItem(AUTH_TOKEN_KEY)
 }
 
-type TokenRole = 'ROLE_ADMIN' | 'ROLE_USER'
+type TokenRole = 'ROLE_ADMIN' | 'ROLE_LIBRARIAN' | 'ROLE_USER'
 
 type TokenPayload = {
   roles?: TokenRole[]
@@ -50,6 +50,9 @@ export const getRoleFromToken = (token: string | null): Role | null => {
   }
   if (role === 'ROLE_ADMIN') {
     return 'admin'
+  }
+  if (role === 'ROLE_LIBRARIAN') {
+    return 'librarian'
   }
   if (role === 'ROLE_USER') {
     return 'user'

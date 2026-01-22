@@ -6,6 +6,8 @@ export type AuthContextValue = {
   isAuthenticated: boolean
   role: Role | null
   isAdmin: boolean
+  isLibrarian: boolean
+  isStaff: boolean
   login: (token: string) => void
   logout: () => void
 }

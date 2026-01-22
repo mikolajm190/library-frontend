@@ -46,6 +46,8 @@ export default function AuthProvider({ children }: AuthProviderProps) {
 
   const role = useMemo(() => getRoleFromToken(token), [token])
   const isAdmin = role === 'admin'
+  const isLibrarian = role === 'librarian'
+  const isStaff = isAdmin || isLibrarian
 
   const value = useMemo<AuthContextValue>(
     () => ({
@@ -53,10 +55,12 @@ export default function AuthProvider({ children }: AuthProviderProps) {
       isAuthenticated: Boolean(token),
       role,
       isAdmin,
+      isLibrarian,
+      isStaff,
       login,
       logout,
     }),
-    [token, role, isAdmin, login, logout],
+    [token, role, isAdmin, isLibrarian, isStaff, login, logout],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
