@@ -91,6 +91,7 @@ export default function useBooksAdmin({ size = 10 }: UseBooksAdminOptions = {}):
     onSuccess: () => {
       setActionSuccess('Book updated.')
       void queryClient.invalidateQueries({ queryKey: queryKeys.loans() })
+      void queryClient.invalidateQueries({ queryKey: queryKeys.reservations() })
     },
     onSettled: () => {
       setUpdatingBookId(null)
@@ -118,6 +119,7 @@ export default function useBooksAdmin({ size = 10 }: UseBooksAdminOptions = {}):
     onSuccess: () => {
       setActionSuccess('Book deleted.')
       void queryClient.invalidateQueries({ queryKey: queryKeys.loans() })
+      void queryClient.invalidateQueries({ queryKey: queryKeys.reservations() })
     },
     onSettled: () => {
       setDeletingBookId(null)

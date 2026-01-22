@@ -153,6 +153,7 @@ export default function useLoansPanel({
       setSuccessLoanId(null)
       void queryClient.invalidateQueries({ queryKey: queryKeys.loans() })
       void queryClient.invalidateQueries({ queryKey: queryKeys.books() })
+      void queryClient.invalidateQueries({ queryKey: queryKeys.reservations() })
     },
     onSettled: () => {
       setCancellingLoanId(null)
