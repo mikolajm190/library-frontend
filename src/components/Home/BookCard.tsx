@@ -6,10 +6,10 @@ import BookCardStats from './BookCardStats'
 
 type BookCardProps = {
   book: Book
-  onBorrow?: (book: Book) => void
+  onReserve?: (book: Book) => void
   className?: string
-  isBorrowing?: boolean
-  borrowError?: string | null
+  isReserving?: boolean
+  reserveError?: string | null
 }
 
 const baseCardClasses =
@@ -17,17 +17,17 @@ const baseCardClasses =
 
 export default function BookCard({
   book,
-  onBorrow,
+  onReserve,
   className,
-  isBorrowing = false,
-  borrowError,
+  isReserving = false,
+  reserveError,
 }: BookCardProps) {
   const totalCopies = book.totalCopies
   const availabilityRatio = totalCopies === 0 ? 0 : book.availableCopies / totalCopies
   const isAvailable = book.availableCopies > 0
   const availabilityText = isAvailable ? 'Available now' : 'Not available'
   const cardClasses = [baseCardClasses, className].filter(Boolean).join(' ')
-  const borrowDisabled = !onBorrow || !isAvailable || isBorrowing
+  const reserveDisabled = !onReserve || isReserving
 
   return (
     <article className={cardClasses}>
@@ -43,11 +43,12 @@ export default function BookCard({
       <BookCardAvailabilityBar totalCopies={totalCopies} availabilityRatio={availabilityRatio} />
 
       <BookCardBorrowButton
-        isDisabled={borrowDisabled}
-        isBorrowing={isBorrowing}
-        onClick={() => onBorrow?.(book)}
+        isDisabled={reserveDisabled}
+        isLoading={isReserving}
+        isAvailable={isAvailable}
+        onClick={() => onReserve?.(book)}
       />
-      {borrowError && <p className="text-xs text-amber-700">{borrowError}</p>}
+      {reserveError && <p className="text-xs text-amber-700">{reserveError}</p>}
     </article>
   )
 }

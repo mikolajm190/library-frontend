@@ -1,32 +1,32 @@
 import { useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { createLoan } from '../api/loans.api'
+import { createReservation } from '../api/reservations.api'
 import { getMe } from '../api/users.api'
 import { getApiErrorMessage } from '../api/apiError'
 import { queryKeys } from '../api/queryKeys'
 import { useAuth } from './useAuth'
 
-type UseBorrowBookResult = {
-  borrowBook: (bookId: string, onSuccess?: () => void | Promise<void>) => Promise<void>
-  isBorrowing: boolean
-  borrowingBookId: string | null
+type UseReserveBookResult = {
+  reserveBook: (bookId: string, onSuccess?: () => void | Promise<void>) => Promise<void>
+  isReserving: boolean
+  reservingBookId: string | null
   error: string | null
   errorBookId: string | null
 }
 
-export default function useBorrowBook(): UseBorrowBookResult {
+export default function useReserveBook(): UseReserveBookResult {
   const { isAuthenticated } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
   const queryClient = useQueryClient()
   const [error, setError] = useState<string | null>(null)
   const [errorBookId, setErrorBookId] = useState<string | null>(null)
-  const [isBorrowing, setIsBorrowing] = useState(false)
-  const [borrowingBookId, setBorrowingBookId] = useState<string | null>(null)
+  const [isReserving, setIsReserving] = useState(false)
+  const [reservingBookId, setReservingBookId] = useState<string | null>(null)
 
-  const borrowBook = async (bookId: string, onSuccess?: () => void | Promise<void>) => {
-    if (isBorrowing) {
+  const reserveBook = async (bookId: string, onSuccess?: () => void | Promise<void>) => {
+    if (isReserving) {
       return
     }
 
@@ -38,26 +38,26 @@ export default function useBorrowBook(): UseBorrowBookResult {
     }
 
     try {
-      setIsBorrowing(true)
-      setBorrowingBookId(bookId)
+      setIsReserving(true)
+      setReservingBookId(bookId)
       setError(null)
       setErrorBookId(null)
       const user = await getMe()
-      await createLoan({ userId: user.id, bookId })
+      await createReservation({ userId: user.id, bookId })
       if (onSuccess) {
         await onSuccess()
       }
-      await queryClient.invalidateQueries({ queryKey: queryKeys.loans() })
+      await queryClient.invalidateQueries({ queryKey: queryKeys.reservations() })
       await queryClient.invalidateQueries({ queryKey: queryKeys.books() })
       navigate('/dashboard')
     } catch (err) {
-      setError(getApiErrorMessage(err, 'Failed to borrow book.'))
+      setError(getApiErrorMessage(err, 'Failed to reserve book.'))
       setErrorBookId(bookId)
     } finally {
-      setIsBorrowing(false)
-      setBorrowingBookId(null)
+      setIsReserving(false)
+      setReservingBookId(null)
     }
   }
 
-  return { borrowBook, isBorrowing, borrowingBookId, error, errorBookId }
+  return { reserveBook, isReserving, reservingBookId, error, errorBookId }
 }

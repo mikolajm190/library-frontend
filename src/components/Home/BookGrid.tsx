@@ -5,24 +5,24 @@ type BookGridProps = {
   books: Book[]
   isLoading: boolean
   error: string | null
-  borrowError: string | null
-  borrowErrorBookId: string | null
+  reserveError: string | null
+  reserveErrorBookId: string | null
   onRetry: () => void
-  onBorrow: (book: Book) => void
-  isBorrowing: boolean
-  borrowingBookId: string | null
+  onReserve: (book: Book) => void
+  isReserving: boolean
+  reservingBookId: string | null
 }
 
 export default function BookGrid({
   books,
   isLoading,
   error,
-  borrowError,
-  borrowErrorBookId,
+  reserveError,
+  reserveErrorBookId,
   onRetry,
-  onBorrow,
-  isBorrowing,
-  borrowingBookId,
+  onReserve,
+  isReserving,
+  reservingBookId,
 }: BookGridProps) {
   return (
     <section className="mx-auto mt-10 grid w-full max-w-6xl gap-6 sm:grid-cols-2 xl:grid-cols-3">
@@ -47,9 +47,9 @@ export default function BookGrid({
           <BookCard
             key={book.id}
             book={book}
-            onBorrow={onBorrow}
-            isBorrowing={isBorrowing && borrowingBookId === book.id}
-            borrowError={borrowErrorBookId === book.id ? borrowError : null}
+            onReserve={onReserve}
+            isReserving={isReserving && reservingBookId === book.id}
+            reserveError={reserveErrorBookId === book.id ? reserveError : null}
           />
         ))}
     </section>
