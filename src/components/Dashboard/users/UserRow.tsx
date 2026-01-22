@@ -62,7 +62,7 @@ export default function UserRow({ user, onUpdate, onDelete, isUpdating, isDeleti
               onPasswordChange={setPassword}
             />
           ) : (
-            <UserDetails username={user.username} id={user.id} />
+            <UserDetails username={user.username} id={user.id} role={user.role} />
           )}
         </div>
       </div>

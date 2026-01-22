@@ -9,6 +9,7 @@ type UserCreateFormProps = {
 export default function UserCreateForm({ isSubmitting, onCreate }: UserCreateFormProps) {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [role, setRole] = useState<'USER' | 'LIBRARIAN'>('USER')
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -16,10 +17,15 @@ export default function UserCreateForm({ isSubmitting, onCreate }: UserCreateFor
       return
     }
 
-    const success = await onCreate({ username: username.trim(), password: password.trim() })
+    const success = await onCreate({
+      username: username.trim(),
+      password: password.trim(),
+      role,
+    })
     if (success) {
       setUsername('')
       setPassword('')
+      setRole('USER')
     }
   }
 
@@ -50,6 +56,18 @@ export default function UserCreateForm({ isSubmitting, onCreate }: UserCreateFor
             disabled={isSubmitting}
             className="rounded-xl border border-black/10 bg-white px-3 py-2 text-sm text-[color:var(--ink)] outline-none transition focus:border-black/30 focus:ring-2 focus:ring-black/5"
           />
+        </label>
+        <label className="flex flex-col gap-2 text-xs text-[color:var(--ink-muted)]">
+          Role
+          <select
+            value={role}
+            onChange={(event) => setRole(event.target.value as 'USER' | 'LIBRARIAN')}
+            disabled={isSubmitting}
+            className="rounded-xl border border-black/10 bg-white px-3 py-2 text-sm text-[color:var(--ink)] outline-none transition focus:border-black/30 focus:ring-2 focus:ring-black/5"
+          >
+            <option value="USER">User</option>
+            <option value="LIBRARIAN">Librarian</option>
+          </select>
         </label>
       </div>
       <button
