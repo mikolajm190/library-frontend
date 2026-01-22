@@ -3,7 +3,7 @@ import type { Loan } from '../../../schemas/loan.schema'
 
 type LoanListProps = {
   loans: Loan[]
-  isAdmin: boolean
+  isStaff: boolean
   isUpdating: boolean
   isCancelling: boolean
   updatingLoanId: string | null
@@ -16,7 +16,7 @@ type LoanListProps = {
 
 export default function LoanList({
   loans,
-  isAdmin,
+  isStaff,
   isUpdating,
   isCancelling,
   updatingLoanId,
@@ -32,7 +32,7 @@ export default function LoanList({
         <LoanCard
           key={loan.id}
           loan={loan}
-          isAdmin={isAdmin}
+          isStaff={isStaff}
           onProlong={onProlong}
           onCancel={onCancel}
           isUpdating={isUpdating && updatingLoanId === loan.id}

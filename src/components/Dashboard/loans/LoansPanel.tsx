@@ -2,34 +2,42 @@ import { useState } from 'react'
 import { ClipboardList } from 'lucide-react'
 import useLoansPanel from '../../../hooks/useLoansPanel'
 import DashboardPanel from '../shared/DashboardPanel'
+import LoanCreateForm from './LoanCreateForm'
 import LoanList from './LoanList'
+import PanelFooter from '../shared/PanelFooter'
 import PanelListContainer from '../shared/PanelListContainer'
 import PanelStatus from '../shared/PanelStatus'
 import PanelSearch from '../shared/PanelSearch'
 
 type LoansPanelProps = {
-  isAdmin: boolean
+  isStaff: boolean
 }
 
-export default function LoansPanel({ isAdmin }: LoansPanelProps) {
+export default function LoansPanel({ isStaff }: LoansPanelProps) {
   const {
     loans,
     isLoading,
     loadError,
     refetch,
+    page,
+    isLastPage,
+    goPrev,
+    goNext,
     actionError,
     actionSuccess,
     successLoanId,
+    isCreating,
+    createLoan,
     isUpdating,
     updatingLoanId,
     isCancelling,
     cancellingLoanId,
     prolongLoan,
     cancelLoan,
-  } = useLoansPanel()
+  } = useLoansPanel({ size: 10 })
 
-  const loansTitle = isAdmin ? 'All loans' : 'My loans'
-  const loansDescription = isAdmin
+  const loansTitle = isStaff ? 'All loans' : 'My loans'
+  const loansDescription = isStaff
     ? 'Review overdue items and manage all checkouts.'
     : 'Track your current loans and upcoming returns.'
   const [searchQuery, setSearchQuery] = useState('')
@@ -37,7 +45,7 @@ export default function LoansPanel({ isAdmin }: LoansPanelProps) {
   const filteredLoans = normalizedQuery
     ? loans.filter((loan) => {
         const terms = [loan.book.title, loan.book.author]
-        if (isAdmin) {
+        if (isStaff) {
           terms.push(loan.user.username)
         }
         return terms.some((term) => term.toLowerCase().includes(normalizedQuery))
@@ -55,9 +63,11 @@ export default function LoansPanel({ isAdmin }: LoansPanelProps) {
       icon={<ClipboardList className="h-5 w-5 text-[color:var(--ink)]" aria-hidden />}
       bodyClassName="flex min-h-0 flex-1 flex-col"
     >
+      {isStaff && <LoanCreateForm isSubmitting={isCreating} onCreate={createLoan} />}
       <PanelSearch
+        className={isStaff ? 'mt-4' : undefined}
         label="Search loans"
-        placeholder={isAdmin ? 'Search by book or borrower' : 'Search by book or author'}
+        placeholder={isStaff ? 'Search by book or borrower' : 'Search by book or author'}
         value={searchQuery}
         onChange={setSearchQuery}
       />
@@ -75,7 +85,7 @@ export default function LoansPanel({ isAdmin }: LoansPanelProps) {
         {!isLoading && !loadError && filteredLoans.length > 0 && (
           <LoanList
             loans={filteredLoans}
-            isAdmin={isAdmin}
+            isStaff={isStaff}
             isUpdating={isUpdating}
             isCancelling={isCancelling}
             updatingLoanId={updatingLoanId}
@@ -87,6 +97,16 @@ export default function LoansPanel({ isAdmin }: LoansPanelProps) {
           />
         )}
       </PanelListContainer>
+
+      {!loadError && (
+        <PanelFooter
+          page={page}
+          isLoading={isLoading}
+          isLastPage={isLastPage}
+          onPrev={goPrev}
+          onNext={goNext}
+        />
+      )}
     </DashboardPanel>
   )
 }

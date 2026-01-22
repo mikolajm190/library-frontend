@@ -1,18 +1,28 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { cancelLoan, getLoans, prolongLoan } from '../api/loans.api'
+import { cancelLoan, createLoan, getLoans, prolongLoan } from '../api/loans.api'
 import { getApiErrorMessage } from '../api/apiError'
 import { queryKeys } from '../api/queryKeys'
 import type { Loan } from '../schemas/loan.schema'
+
+type UseLoansPanelOptions = {
+  size?: number
+}
 
 type UseLoansPanelResult = {
   loans: Loan[]
   isLoading: boolean
   loadError: string | null
   refetch: () => void
+  page: number
+  isLastPage: boolean
+  goPrev: () => void
+  goNext: () => void
   actionError: string | null
   actionSuccess: string | null
   successLoanId: string | null
+  isCreating: boolean
+  createLoan: (payload: { userId: string; bookId: string }) => Promise<boolean>
   isUpdating: boolean
   updatingLoanId: string | null
   isCancelling: boolean
@@ -21,8 +31,14 @@ type UseLoansPanelResult = {
   cancelLoan: (loanId: string) => Promise<boolean>
 }
 
-export default function useLoansPanel(): UseLoansPanelResult {
+const DEFAULT_SORT_BY = 'returnDate'
+const DEFAULT_SORT_ORDER = 'desc'
+
+export default function useLoansPanel({
+  size = 10,
+}: UseLoansPanelOptions = {}): UseLoansPanelResult {
   const queryClient = useQueryClient()
+  const [page, setPage] = useState(0)
   const [actionError, setActionError] = useState<string | null>(null)
   const [actionSuccess, setActionSuccess] = useState<string | null>(null)
   const [successLoanId, setSuccessLoanId] = useState<string | null>(null)
@@ -30,8 +46,14 @@ export default function useLoansPanel(): UseLoansPanelResult {
   const [cancellingLoanId, setCancellingLoanId] = useState<string | null>(null)
 
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: queryKeys.loans(),
-    queryFn: ({ signal }) => getLoans(signal),
+    queryKey: queryKeys.loans({
+      page,
+      size,
+      sortBy: DEFAULT_SORT_BY,
+      sortOrder: DEFAULT_SORT_ORDER,
+    }),
+    queryFn: ({ signal }) =>
+      getLoans({ page, size, sortBy: DEFAULT_SORT_BY, sortOrder: DEFAULT_SORT_ORDER }, signal),
   })
 
   const loans = data ?? []
@@ -40,6 +62,21 @@ export default function useLoansPanel(): UseLoansPanelResult {
       ? error.message
       : 'Failed to load loans'
     : null
+  const isLastPage = !isLoading && loans.length < size
+
+  const createMutation = useMutation({
+    mutationFn: (payload: { userId: string; bookId: string }, { signal }) =>
+      createLoan(payload, signal),
+    onSuccess: () => {
+      setActionSuccess('Loan created.')
+      setSuccessLoanId(null)
+      setPage(0)
+      void queryClient.invalidateQueries({ queryKey: queryKeys.loans() })
+      void queryClient.invalidateQueries({ queryKey: queryKeys.books() })
+      void queryClient.invalidateQueries({ queryKey: queryKeys.reservations() })
+    },
+    onError: (err) => setActionError(getApiErrorMessage(err, 'Failed to create loan.')),
+  })
 
   const prolongMutation = useMutation({
     mutationFn: (
@@ -47,7 +84,12 @@ export default function useLoansPanel(): UseLoansPanelResult {
       { signal },
     ) => prolongLoan(loanId, daysToProlong, signal),
     onMutate: async ({ loanId, daysToProlong }) => {
-      const queryKey = queryKeys.loans()
+      const queryKey = queryKeys.loans({
+        page,
+        size,
+        sortBy: DEFAULT_SORT_BY,
+        sortOrder: DEFAULT_SORT_ORDER,
+      })
       await queryClient.cancelQueries({ queryKey })
       const previous = queryClient.getQueryData<Loan[]>(queryKey)
       if (previous) {
@@ -85,7 +127,12 @@ export default function useLoansPanel(): UseLoansPanelResult {
   const cancelMutation = useMutation({
     mutationFn: (loanId: string, { signal }) => cancelLoan(loanId, signal),
     onMutate: async (loanId) => {
-      const queryKey = queryKeys.loans()
+      const queryKey = queryKeys.loans({
+        page,
+        size,
+        sortBy: DEFAULT_SORT_BY,
+        sortOrder: DEFAULT_SORT_ORDER,
+      })
       await queryClient.cancelQueries({ queryKey })
       const previous = queryClient.getQueryData<Loan[]>(queryKey)
       if (previous) {
@@ -150,14 +197,35 @@ export default function useLoansPanel(): UseLoansPanelResult {
     }
   }
 
+  const createLoanEntry = async (payload: { userId: string; bookId: string }): Promise<boolean> => {
+    if (createMutation.isPending) {
+      return false
+    }
+    setActionError(null)
+    setActionSuccess(null)
+    setSuccessLoanId(null)
+    try {
+      await createMutation.mutateAsync(payload)
+      return true
+    } catch {
+      return false
+    }
+  }
+
   return {
     loans,
     isLoading,
     loadError,
     refetch,
+    page,
+    isLastPage,
+    goPrev: () => setPage((current) => Math.max(0, current - 1)),
+    goNext: () => setPage((current) => current + 1),
     actionError,
     actionSuccess,
     successLoanId,
+    isCreating: createMutation.isPending,
+    createLoan: createLoanEntry,
     isUpdating: prolongMutation.isPending,
     updatingLoanId,
     isCancelling: cancelMutation.isPending,

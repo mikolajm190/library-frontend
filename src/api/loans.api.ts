@@ -12,8 +12,35 @@ const normalizeLoan = (loan: LoanApi): Loan => ({
   returnDate: new Date(loan.returnDate),
 })
 
-export async function getLoans(signal?: AbortSignal): Promise<LoanListResponse> {
-  const response = await client.get<LoanApi[]>('/v1/loans', { signal })
+export type GetLoansParams = {
+  page?: number
+  size?: number
+  sortBy?: string
+  sortOrder?: 'asc' | 'desc'
+}
+
+export async function getLoans(
+  params: GetLoansParams = {},
+  signal?: AbortSignal,
+): Promise<LoanListResponse> {
+  const query: Record<string, number | string> = {}
+  if (params.page !== undefined) {
+    query.page = params.page
+  }
+  if (params.size !== undefined) {
+    query.size = params.size
+  }
+  if (params.sortBy) {
+    query.sortBy = params.sortBy
+  }
+  if (params.sortOrder) {
+    query.sortOrder = params.sortOrder
+  }
+
+  const response = await client.get<LoanApi[]>('/v1/loans', {
+    params: Object.keys(query).length > 0 ? query : undefined,
+    signal,
+  })
   return response.data.map(normalizeLoan)
 }
 

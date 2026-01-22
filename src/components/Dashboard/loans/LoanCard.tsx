@@ -5,7 +5,7 @@ import LoanHeader from './LoanHeader'
 
 type LoanCardProps = {
   loan: Loan
-  isAdmin: boolean
+  isStaff: boolean
   onProlong: (loanId: string) => void
   onCancel: (loanId: string) => void
   isUpdating: boolean
@@ -16,7 +16,7 @@ type LoanCardProps = {
 
 export default function LoanCard({
   loan,
-  isAdmin,
+  isStaff,
   onProlong,
   onCancel,
   isUpdating,
@@ -30,7 +30,7 @@ export default function LoanCard({
         <LoanHeader title={loan.book.title} author={loan.book.author} />
         <LoanDatesCard borrowDate={loan.borrowDate} returnDate={loan.returnDate} />
       </div>
-      {isAdmin && (
+      {isStaff && (
         <p className="mt-2 text-xs text-[color:var(--ink-muted)]">
           Borrower: {loan.user.username}
         </p>
