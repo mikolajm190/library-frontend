@@ -51,7 +51,7 @@ export default function ReservationCard({
       </div>
       {isStaff && (
         <p className="mt-2 text-xs text-[color:var(--ink-muted)]">
-          Requester: {reservation.user.username}
+          Reserved for: {reservation.user.username}
         </p>
       )}
       <ReservationActions
