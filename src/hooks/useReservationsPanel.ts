@@ -145,10 +145,10 @@ export default function useReservationsPanel({
   const processMutation = useMutation({
     mutationFn: (_: void, { signal }) => deleteExpiredReservations(signal),
     onError: (err) => {
-      setActionError(getApiErrorMessage(err, 'Failed to process reservations'))
+      setActionError(getApiErrorMessage(err, 'Failed to remove expired reservations'))
     },
     onSuccess: () => {
-      setActionSuccess('Reservations processed.')
+      setActionSuccess('Expired reservations removed.')
       void queryClient.invalidateQueries({ queryKey: queryKeys.books() })
       void queryClient.invalidateQueries({ queryKey: queryKeys.reservations() })
     },
