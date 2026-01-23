@@ -8,6 +8,7 @@ type BookRowActionsProps = {
   onSave: () => void
   onCancel: () => void
   onDelete: () => void
+  className?: string
 }
 
 export default function BookRowActions({
@@ -18,11 +19,15 @@ export default function BookRowActions({
   onSave,
   onCancel,
   onDelete,
+  className,
 }: BookRowActionsProps) {
   const isDisabled = isUpdating || isDeleting
+  const containerClasses = ['mt-4 flex flex-wrap items-center gap-3', className]
+    .filter(Boolean)
+    .join(' ')
 
   return (
-    <div className="mt-4 flex flex-wrap items-center gap-3">
+    <div className={containerClasses}>
       {isEditing ? (
         <>
           <button

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   createBook,
@@ -14,6 +14,8 @@ import type { Book } from '../schemas/book.schema'
 
 type UseBooksAdminOptions = {
   size?: number
+  sortBy?: string
+  sortOrder?: 'asc' | 'desc'
 }
 
 type UseBooksAdminResult = {
@@ -37,7 +39,14 @@ type UseBooksAdminResult = {
   deleteBook: (bookId: string) => Promise<boolean>
 }
 
-export default function useBooksAdmin({ size = 10 }: UseBooksAdminOptions = {}): UseBooksAdminResult {
+const DEFAULT_SORT_BY = 'title'
+const DEFAULT_SORT_ORDER = 'asc'
+
+export default function useBooksAdmin({
+  size = 10,
+  sortBy = DEFAULT_SORT_BY,
+  sortOrder = DEFAULT_SORT_ORDER,
+}: UseBooksAdminOptions = {}): UseBooksAdminResult {
   const queryClient = useQueryClient()
   const [page, setPage] = useState(0)
   const [actionError, setActionError] = useState<string | null>(null)
@@ -45,9 +54,13 @@ export default function useBooksAdmin({ size = 10 }: UseBooksAdminOptions = {}):
   const [updatingBookId, setUpdatingBookId] = useState<string | null>(null)
   const [deletingBookId, setDeletingBookId] = useState<string | null>(null)
 
+  useEffect(() => {
+    setPage(0)
+  }, [sortBy, sortOrder])
+
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: queryKeys.books({ page, size }),
-    queryFn: ({ signal }) => getBooks({ page, size }, signal),
+    queryKey: queryKeys.books({ page, size, sortBy, sortOrder }),
+    queryFn: ({ signal }) => getBooks({ page, size, sortBy, sortOrder }, signal),
   })
 
   const books = data ?? []
@@ -74,7 +87,7 @@ export default function useBooksAdmin({ size = 10 }: UseBooksAdminOptions = {}):
       { signal },
     ) => updateBook(bookId, payload, signal),
     onMutate: async ({ bookId, payload }) => {
-      const queryKey = queryKeys.books({ page, size })
+      const queryKey = queryKeys.books({ page, size, sortBy, sortOrder })
       await queryClient.cancelQueries({ queryKey })
       const previous = queryClient.getQueryData<typeof books>(queryKey)
       queryClient.setQueryData<typeof books>(queryKey, (current) =>
@@ -102,7 +115,7 @@ export default function useBooksAdmin({ size = 10 }: UseBooksAdminOptions = {}):
   const deleteMutation = useMutation({
     mutationFn: (bookId: string, { signal }) => deleteBook(bookId, signal),
     onMutate: async (bookId) => {
-      const queryKey = queryKeys.books({ page, size })
+      const queryKey = queryKeys.books({ page, size, sortBy, sortOrder })
       await queryClient.cancelQueries({ queryKey })
       const previous = queryClient.getQueryData<typeof books>(queryKey)
       queryClient.setQueryData<typeof books>(queryKey, (current) =>

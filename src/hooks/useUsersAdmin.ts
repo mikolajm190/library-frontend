@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   createUser,
@@ -14,6 +14,8 @@ import type { User } from '../schemas/user.schema'
 
 type UseUsersAdminOptions = {
   size?: number
+  sortBy?: string
+  sortOrder?: 'asc' | 'desc'
 }
 
 type UseUsersAdminResult = {
@@ -37,7 +39,14 @@ type UseUsersAdminResult = {
   deleteUser: (userId: string) => Promise<boolean>
 }
 
-export default function useUsersAdmin({ size = 10 }: UseUsersAdminOptions = {}): UseUsersAdminResult {
+const DEFAULT_SORT_BY = 'username'
+const DEFAULT_SORT_ORDER = 'asc'
+
+export default function useUsersAdmin({
+  size = 10,
+  sortBy = DEFAULT_SORT_BY,
+  sortOrder = DEFAULT_SORT_ORDER,
+}: UseUsersAdminOptions = {}): UseUsersAdminResult {
   const queryClient = useQueryClient()
   const [page, setPage] = useState(0)
   const [actionError, setActionError] = useState<string | null>(null)
@@ -45,9 +54,13 @@ export default function useUsersAdmin({ size = 10 }: UseUsersAdminOptions = {}):
   const [updatingUserId, setUpdatingUserId] = useState<string | null>(null)
   const [deletingUserId, setDeletingUserId] = useState<string | null>(null)
 
+  useEffect(() => {
+    setPage(0)
+  }, [sortBy, sortOrder])
+
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: queryKeys.users({ page, size }),
-    queryFn: ({ signal }) => getUsers({ page, size }, signal),
+    queryKey: queryKeys.users({ page, size, sortBy, sortOrder }),
+    queryFn: ({ signal }) => getUsers({ page, size, sortBy, sortOrder }, signal),
   })
 
   const users = data ?? []
@@ -74,7 +87,7 @@ export default function useUsersAdmin({ size = 10 }: UseUsersAdminOptions = {}):
       { signal },
     ) => updateUser(userId, payload, signal),
     onMutate: async ({ userId, payload }) => {
-      const queryKey = queryKeys.users({ page, size })
+      const queryKey = queryKeys.users({ page, size, sortBy, sortOrder })
       await queryClient.cancelQueries({ queryKey })
       const previous = queryClient.getQueryData<typeof users>(queryKey)
       queryClient.setQueryData<typeof users>(queryKey, (current) =>
@@ -101,7 +114,7 @@ export default function useUsersAdmin({ size = 10 }: UseUsersAdminOptions = {}):
   const deleteMutation = useMutation({
     mutationFn: (userId: string, { signal }) => deleteUser(userId, signal),
     onMutate: async (userId) => {
-      const queryKey = queryKeys.users({ page, size })
+      const queryKey = queryKeys.users({ page, size, sortBy, sortOrder })
       await queryClient.cancelQueries({ queryKey })
       const previous = queryClient.getQueryData<typeof users>(queryKey)
       queryClient.setQueryData<typeof users>(queryKey, (current) =>
