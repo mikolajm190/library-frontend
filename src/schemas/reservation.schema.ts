@@ -5,7 +5,7 @@ export interface Reservation {
   id: string;
   createdAt: Date;
   expiresAt: Date;
-  status: "READY" | "QUEUED"
+  status: "READY" | "QUEUED" | "EXPIRED"
   user: User;
   book: Book;
 }

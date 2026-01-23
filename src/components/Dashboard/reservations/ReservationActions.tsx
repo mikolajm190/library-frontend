@@ -8,6 +8,7 @@ type ReservationActionsProps = {
   isCreatingLoan: boolean
   onCancel: (reservationId: string) => void
   onCreateLoan: () => void
+  className?: string
 }
 
 export default function ReservationActions({
@@ -18,12 +19,16 @@ export default function ReservationActions({
   isCreatingLoan,
   onCancel,
   onCreateLoan,
+  className,
 }: ReservationActionsProps) {
   const isBusy = isCancelling || isCreatingLoan
   const canCreateLoan = isStaff && status === 'READY'
+  const containerClasses = ['mt-4 flex flex-wrap items-center gap-3', className]
+    .filter(Boolean)
+    .join(' ')
 
   return (
-    <div className="mt-4 flex flex-wrap items-center gap-3">
+    <div className={containerClasses}>
       {canCreateLoan && (
         <button
           type="button"

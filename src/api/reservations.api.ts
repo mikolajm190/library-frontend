@@ -80,3 +80,14 @@ export async function deleteReservation(
 export async function deleteExpiredReservations(signal?: AbortSignal): Promise<void> {
   await client.delete('/v1/reservations/expired', { signal })
 }
+
+type ExpireReservationsResponse = {
+  updated: number
+}
+
+export async function expireReservations(signal?: AbortSignal): Promise<number> {
+  const response = await client.post<ExpireReservationsResponse>('/v1/reservations/expire', null, {
+    signal,
+  })
+  return response.data.updated
+}

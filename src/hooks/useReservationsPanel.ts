@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { createLoan } from '../api/loans.api'
 import {
   createReservation,
   deleteExpiredReservations,
   deleteReservation,
+  expireReservations,
   getReservations,
 } from '../api/reservations.api'
 import { getApiErrorMessage } from '../api/apiError'
@@ -13,6 +14,8 @@ import type { Reservation } from '../schemas/reservation.schema'
 
 type UseReservationsPanelOptions = {
   size?: number
+  sortBy?: string
+  sortOrder?: 'asc' | 'desc'
 }
 
 type UseReservationsPanelResult = {
@@ -28,6 +31,8 @@ type UseReservationsPanelResult = {
   actionSuccess: string | null
   isCreating: boolean
   createReservation: (payload: { userId: string; bookId: string }) => Promise<boolean>
+  isExpiring: boolean
+  expireReservations: () => Promise<boolean>
   isProcessing: boolean
   processReservations: () => Promise<boolean>
   isCancelling: boolean
@@ -43,6 +48,8 @@ const DEFAULT_SORT_ORDER = 'desc'
 
 export default function useReservationsPanel({
   size = 10,
+  sortBy = DEFAULT_SORT_BY,
+  sortOrder = DEFAULT_SORT_ORDER,
 }: UseReservationsPanelOptions = {}): UseReservationsPanelResult {
   const queryClient = useQueryClient()
   const [page, setPage] = useState(0)
@@ -51,15 +58,19 @@ export default function useReservationsPanel({
   const [cancellingReservationId, setCancellingReservationId] = useState<string | null>(null)
   const [creatingLoanReservationId, setCreatingLoanReservationId] = useState<string | null>(null)
 
+  useEffect(() => {
+    setPage(0)
+  }, [sortBy, sortOrder])
+
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: queryKeys.reservations({
       page,
       size,
-      sortBy: DEFAULT_SORT_BY,
-      sortOrder: DEFAULT_SORT_ORDER,
+      sortBy,
+      sortOrder,
     }),
     queryFn: ({ signal }) =>
-      getReservations({ page, size, sortBy: DEFAULT_SORT_BY, sortOrder: DEFAULT_SORT_ORDER }, signal),
+      getReservations({ page, size, sortBy, sortOrder }, signal),
   })
 
   const reservations = data ?? []
@@ -76,8 +87,8 @@ export default function useReservationsPanel({
       const queryKey = queryKeys.reservations({
         page,
         size,
-        sortBy: DEFAULT_SORT_BY,
-        sortOrder: DEFAULT_SORT_ORDER,
+        sortBy,
+        sortOrder,
       })
       await queryClient.cancelQueries({ queryKey })
       const previous = queryClient.getQueryData<Reservation[]>(queryKey)
@@ -154,6 +165,18 @@ export default function useReservationsPanel({
     },
   })
 
+  const expireMutation = useMutation({
+    mutationFn: (_: void, { signal }) => expireReservations(signal),
+    onError: (err) => {
+      setActionError(getApiErrorMessage(err, 'Failed to mark reservations as expired'))
+    },
+    onSuccess: (updated) => {
+      const suffix = updated === 1 ? 'reservation' : 'reservations'
+      setActionSuccess(`Marked ${updated} ${suffix} as expired.`)
+      void queryClient.invalidateQueries({ queryKey: queryKeys.reservations() })
+    },
+  })
+
   const cancelReservationEntry = async (reservationId: string): Promise<boolean> => {
     if (cancelMutation.isPending) {
       return false
@@ -219,6 +242,20 @@ export default function useReservationsPanel({
     }
   }
 
+  const expireReservationsEntry = async (): Promise<boolean> => {
+    if (expireMutation.isPending) {
+      return false
+    }
+    setActionError(null)
+    setActionSuccess(null)
+    try {
+      await expireMutation.mutateAsync()
+      return true
+    } catch {
+      return false
+    }
+  }
+
   const goPrev = () => setPage((current) => Math.max(0, current - 1))
   const goNext = () => setPage((current) => current + 1)
 
@@ -235,6 +272,8 @@ export default function useReservationsPanel({
     actionSuccess,
     isCreating: createMutation.isPending,
     createReservation: createReservationEntry,
+    isExpiring: expireMutation.isPending,
+    expireReservations: expireReservationsEntry,
     isProcessing: processMutation.isPending,
     processReservations: processReservationsEntry,
     isCancelling: cancelMutation.isPending,
