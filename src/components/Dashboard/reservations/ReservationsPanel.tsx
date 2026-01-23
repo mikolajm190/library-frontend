@@ -28,6 +28,7 @@ export default function ReservationsPanel({ isStaff }: ReservationsPanelProps) {
     isLastPage,
     goPrev,
     goNext,
+    resetPage,
     actionError,
     actionSuccess,
     isCreating,
@@ -94,7 +95,10 @@ export default function ReservationsPanel({ isStaff }: ReservationsPanelProps) {
             Sort by
             <select
               value={sortBy}
-              onChange={(event) => setSortBy(event.target.value as ReservationSortKey)}
+              onChange={(event) => {
+                setSortBy(event.target.value as ReservationSortKey)
+                resetPage()
+              }}
               className="w-full rounded-xl border border-black/10 bg-white px-3 py-2 text-sm text-[color:var(--ink)] outline-none transition focus:border-black/30 focus:ring-2 focus:ring-black/5"
             >
               {sortOptions.map((option) => (
@@ -109,7 +113,10 @@ export default function ReservationsPanel({ isStaff }: ReservationsPanelProps) {
           <p className="text-xs text-[color:var(--ink-muted)]">Order</p>
           <button
             type="button"
-            onClick={() => setSortOrder((current) => (current === 'asc' ? 'desc' : 'asc'))}
+            onClick={() => {
+              setSortOrder((current) => (current === 'asc' ? 'desc' : 'asc'))
+              resetPage()
+            }}
             className="mt-2 w-full rounded-xl border border-black/10 bg-white px-3 py-2 text-sm font-semibold text-[color:var(--ink)] shadow-sm transition hover:-translate-y-0.5 hover:shadow"
           >
             {sortOrder === 'asc' ? 'Ascending' : 'Descending'}

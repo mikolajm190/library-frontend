@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   createBook,
@@ -27,6 +27,7 @@ type UseBooksAdminResult = {
   isLastPage: boolean
   goPrev: () => void
   goNext: () => void
+  resetPage: () => void
   actionError: string | null
   actionSuccess: string | null
   isCreating: boolean
@@ -53,10 +54,6 @@ export default function useBooksAdmin({
   const [actionSuccess, setActionSuccess] = useState<string | null>(null)
   const [updatingBookId, setUpdatingBookId] = useState<string | null>(null)
   const [deletingBookId, setDeletingBookId] = useState<string | null>(null)
-
-  useEffect(() => {
-    setPage(0)
-  }, [sortBy, sortOrder])
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: queryKeys.books({ page, size, sortBy, sortOrder }),
@@ -191,6 +188,7 @@ export default function useBooksAdmin({
 
   const goPrev = () => setPage((current) => Math.max(0, current - 1))
   const goNext = () => setPage((current) => current + 1)
+  const resetPage = () => setPage(0)
 
   return {
     books,
@@ -201,6 +199,7 @@ export default function useBooksAdmin({
     isLastPage,
     goPrev,
     goNext,
+    resetPage,
     actionError,
     actionSuccess,
     isCreating: createMutation.isPending,

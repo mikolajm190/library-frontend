@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   createUser,
@@ -27,6 +27,7 @@ type UseUsersAdminResult = {
   isLastPage: boolean
   goPrev: () => void
   goNext: () => void
+  resetPage: () => void
   actionError: string | null
   actionSuccess: string | null
   isCreating: boolean
@@ -53,10 +54,6 @@ export default function useUsersAdmin({
   const [actionSuccess, setActionSuccess] = useState<string | null>(null)
   const [updatingUserId, setUpdatingUserId] = useState<string | null>(null)
   const [deletingUserId, setDeletingUserId] = useState<string | null>(null)
-
-  useEffect(() => {
-    setPage(0)
-  }, [sortBy, sortOrder])
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: queryKeys.users({ page, size, sortBy, sortOrder }),
@@ -190,6 +187,7 @@ export default function useUsersAdmin({
 
   const goPrev = () => setPage((current) => Math.max(0, current - 1))
   const goNext = () => setPage((current) => current + 1)
+  const resetPage = () => setPage(0)
 
   return {
     users,
@@ -200,6 +198,7 @@ export default function useUsersAdmin({
     isLastPage,
     goPrev,
     goNext,
+    resetPage,
     actionError,
     actionSuccess,
     isCreating: createMutation.isPending,

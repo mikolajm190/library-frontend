@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { createLoan } from '../api/loans.api'
 import {
@@ -27,6 +27,7 @@ type UseReservationsPanelResult = {
   isLastPage: boolean
   goPrev: () => void
   goNext: () => void
+  resetPage: () => void
   actionError: string | null
   actionSuccess: string | null
   isCreating: boolean
@@ -57,10 +58,6 @@ export default function useReservationsPanel({
   const [actionSuccess, setActionSuccess] = useState<string | null>(null)
   const [cancellingReservationId, setCancellingReservationId] = useState<string | null>(null)
   const [creatingLoanReservationId, setCreatingLoanReservationId] = useState<string | null>(null)
-
-  useEffect(() => {
-    setPage(0)
-  }, [sortBy, sortOrder])
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: queryKeys.reservations({
@@ -258,6 +255,7 @@ export default function useReservationsPanel({
 
   const goPrev = () => setPage((current) => Math.max(0, current - 1))
   const goNext = () => setPage((current) => current + 1)
+  const resetPage = () => setPage(0)
 
   return {
     reservations,
@@ -268,6 +266,7 @@ export default function useReservationsPanel({
     isLastPage,
     goPrev,
     goNext,
+    resetPage,
     actionError,
     actionSuccess,
     isCreating: createMutation.isPending,
