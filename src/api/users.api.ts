@@ -3,12 +3,11 @@ import type { User, UserListResponse, UserResponse } from '../schemas/user.schem
 
 type UserApi = Omit<User, 'role'> & {
   role?: User['role']
-  userRole?: User['role']
 }
 
 const normalizeUser = (user: UserApi): User => ({
   ...user,
-  role: user.role ?? user.userRole ?? 'USER',
+  role: user.role ?? 'USER',
 })
 
 export async function getMe(signal?: AbortSignal): Promise<UserResponse> {
