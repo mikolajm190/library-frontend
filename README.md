@@ -1,73 +1,55 @@
-# React + TypeScript + Vite
+# Library Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A React + TypeScript single-page app for a library system with role-based workflows.
 
-Currently, two official plugins are available:
+## Project Snapshot
+- Domain: book catalog, reservations queue, and active loans.
+- Auth: JWT-based login/register.
+- Roles: `USER`, `LIBRARIAN`, `ADMIN` (decoded from JWT roles claim).
+- UI scope:
+  - `USER`: browse books, reserve/queue books, track loans/reservations.
+  - `LIBRARIAN`: manage all loans/reservations, create loans from reservations, process expired reservations.
+  - `ADMIN`: librarian capabilities + manage books and users.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Tech Stack
+- React 19
+- TypeScript (strict mode)
+- Vite 7
+- React Router 7
+- TanStack Query 5
+- Axios
+- Tailwind CSS 4
 
-## React Compiler
+## Architecture
+- `src/api/*`: typed API clients for auth, books, loans, reservations, users.
+- `src/hooks/*`: feature hooks wrapping query/mutation logic and UI state.
+- `src/components/*`: reusable UI split by domain (`Home`, `Dashboard/books|users|loans|reservations`).
+- `src/providers/AuthProvider.tsx`: auth context, token persistence, role derivation.
+- `src/Router.tsx`: route mapping + protected dashboard route.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Routing and Access
+- `/`: public home page with catalog and reserve/queue actions.
+- `/login`, `/register`: authentication flows.
+- `/dashboard`: protected route (requires token); rendered content varies by role.
 
-## Expanding the ESLint configuration
+## API Integration
+- Frontend calls `/api/v1/*`.
+- Dev proxy in `vite.config.ts` forwards `/api` to `http://localhost:8080`.
+- Token is stored in `localStorage` under `authToken` and attached as `Authorization: Bearer <token>`.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Data and State Strategy
+- TanStack Query is used for server state and cache invalidation.
+- Shared query keys are centralized in `src/api/queryKeys.ts`.
+- Several dashboard mutations use optimistic updates (with rollback on error).
+- Query defaults in `src/main.tsx`:
+  - `retry: 1`
+  - `staleTime: 30_000`
+  - `refetchOnWindowFocus: false`
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Local Run
+Prerequisites: Node.js LTS and `pnpm`.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+pnpm install
+pnpm dev
 ```
